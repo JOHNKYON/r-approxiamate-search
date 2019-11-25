@@ -19,7 +19,7 @@ using namespace std;
  *   Hamming distances of the K-nearest neighbors.
  */
 
-void mihasher::batchquery(UINT32 *results, UINT32 *numres, qstat *stats, UINT8 *queries, UINT32 numq, int dim1queries)
+void mihasher::batchquery(UINT32 *results, UINT32 *numres, qstat *stats, UINT8 *queries, UINT32 numq, int dim1queries, UINT32 distance)
 {
     counter = new bitarray;
     counter->init(N);
@@ -33,7 +33,7 @@ void mihasher::batchquery(UINT32 *results, UINT32 *numres, qstat *stats, UINT8 *
     UINT8 *pq = queries;
 
     for (int i=0; i<numq; i++) {
-	query(presults, pnumres, pstats, pq, chunks, res);
+	query(presults, pnumres, pstats, pq, chunks, res, distance);
 
 	presults += K;
 	pnumres += B+1;
@@ -51,9 +51,9 @@ void mihasher::batchquery(UINT32 *results, UINT32 *numres, qstat *stats, UINT8 *
 // Temp variables: chunks, res -- I did not want to malloc inside
 // query, so these arrays are passed from outside
 
-void mihasher::query(UINT32 *results, UINT32* numres, qstat *stats, UINT8 *query, UINT64 *chunks, UINT32 *res)
+void mihasher::query(UINT32 *results, UINT32* numres, qstat *stats, UINT8 *query, UINT64 *chunks, UINT32 *res, UINT32 dis)
 {
-    UINT32 maxres = K ? K : N;			// if K == 0 that means we want everything to be processed.
+    UINT32 maxres = N;			// if K == 0 that means we want everything to be processed.
 						// So maxres = N in that case. Otherwise K limits the results processed.
 
     UINT32 n = 0; 				// number of results so far obtained (up to a distance of s per chunk)
@@ -73,75 +73,73 @@ void mihasher::query(UINT32 *results, UINT32* numres, qstat *stats, UINT8 *query
 
     split(chunks, query, m, mplus, b);
     
-    int s;			// the growing search radius per substring
+    int s;			// the search radius for each substring.
 
     int curb = b;		// current b: for the first mplus substrings it is b, for the rest it is (b-1)
 
-    for (s = 0; s <= d && n < maxres; s++) {
+	s = floor((double)dis/m);
 	for (int k=0; k<m; k++) {
-	    if (k < mplus)
+		if (k < mplus)
 		curb = b;
-	    else
+		else
 		curb = b-1;
-	    UINT64 chunksk = chunks[k];
-	    nl += xornum[s+1] - xornum[s];	// number of bit-strings with s number of 1s
+		UINT64 chunksk = chunks[k];
+		nl += xornum[s+1] - xornum[s];	// number of bit-strings with s number of 1s
 
-	    UINT64 bitstr = 0; 			// the bit-string with s number of 1s
-	    for (int i=0; i<s; i++)
-	    	power[i] = i;			// power[i] stores the location of the i'th 1
-	    power[s] = curb+1;			// used for stopping criterion (location of (s+1)th 1)
+		UINT64 bitstr = 0; 			// the bit-string with s number of 1s
+		for (int i=0; i<s; i++)
+			power[i] = i;			// power[i] stores the location of the i'th 1
+		power[s] = curb+1;			// used for stopping criterion (location of (s+1)th 1)
 
-	    int bit = s-1;			// bit determines the 1 that should be moving to the left
-	    // we start from the left-most 1, and move it to the left until it touches another one
+		int bit = s-1;			// bit determines the 1 that should be moving to the left
+		// we start from the left-most 1, and move it to the left until it touches another one
 
-	    while (true) {			// the loop for changing bitstr
-	    	if (bit != -1) {
-	    	    bitstr ^= (power[bit] == bit) ? (UINT64)1 << power[bit] : (UINT64)3 << (power[bit]-1);
-	    	    power[bit]++;
-	    	    bit--;
-	    	} else { // bit == -1
-	    	    /* the binary code bitstr is available for processing */
-	    	    arr = H[k].query(chunksk ^ bitstr, &size); // lookup
-	    	    if (size) {			// the corresponding bucket is not empty
-	    		nd += size;
-	    		for (int c = 0; c < size; c++) {
-	    		    index = arr[c];
-	    		    if (!counter->get(index)) { // if it is not a duplicate
-	    			counter->set(index);
-	    			hammd = match(codes + (UINT64)index*(B_over_8), query, B_over_8);
-	    			nc++;
-	    			if (hammd <= D && numres[hammd] < maxres) {
-	    			    res[hammd * K + numres[hammd]] = index + 1;
-	    			}
+		while (true) {			// the loop for changing bitstr
+			if (bit != -1) {
+				bitstr ^= (power[bit] == bit) ? (UINT64)1 << power[bit] : (UINT64)3 << (power[bit]-1);
+				power[bit]++;
+				bit--;
+			} else { // bit == -1
+				/* the binary code bitstr is available for processing */
+				arr = H[k].query(chunksk ^ bitstr, &size); // lookup
+				if (size) {			// the corresponding bucket is not empty
+				nd += size;
+				for (int c = 0; c < size; c++) {
+					index = arr[c];
+					if (!counter->get(index)) { // if it is not a duplicate
+					counter->set(index);
+					hammd = match(codes + (UINT64)index*(B_over_8), query, B_over_8);
+					nc++;
+					if (hammd <= D && numres[hammd] < maxres) {
+						res[hammd * K + numres[hammd]] = index + 1;
+					}
 				numres[hammd]++;
-	    		    }
-	    		}
-	    	    }
-	    	    /* end of processing */
+					}
+				}
+				}
+				/* end of processing */
 
-	    	    while (++bit < s && power[bit] == power[bit+1]-1) {
-	    		bitstr ^= (UINT64)1 << (power[bit]-1);
-	    		power[bit] = bit;
-	    	    }
-	    	    if (bit == s)
-	    		break;
-	    	}
-	    }
+				while (++bit < s && power[bit] == power[bit+1]-1) {
+				bitstr ^= (UINT64)1 << (power[bit]-1);
+				power[bit] = bit;
+				}
+				if (bit == s)
+				break;
+			}
+		}
 
-	    n = n + numres[s*m+k]; // This line is very tricky ;)
-	    // The k'th substring (0 based) is the last chance of an
-	    // item at a Hamming distance of s*m+k to be
-	    // found. Because if until the k'th substring, an item
-	    // with distance of s*m+k is not found, then it means that
-	    // all of the substrings so far have a distance of (s+1)
-	    // or more, and the remaining substrings have a distance
-	    // of s or more (total > s*m+k).
-	    
-	    if (n >= maxres)
-		break;
+		n = n + numres[s*m+k]; // This line is very tricky ;)
+		// The k'th substring (0 based) is the last chance of an
+		// item at a Hamming distance of s*m+k to be
+		// found. Because if until the k'th substring, an item
+		// with distance of s*m+k is not found, then it means that
+		// all of the substrings so far have a distance of (s+1)
+		// or more, and the remaining substrings have a distance
+		// of s or more (total > s*m+k).
+
+//			if (n >= maxres)
+//			break;
 	}
-    }
-	    
     end = clock();
 
     stats->ticks = end-start;
