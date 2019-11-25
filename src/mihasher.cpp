@@ -74,7 +74,7 @@ void mihasher::query(UINT32 *results, UINT32* numres, qstat *stats, UINT8 *query
     split(chunks, query, m, mplus, b);
     
     int s;			// the search radius for each substring.
-    int S = floor((double)dis/m);
+    int S = ceil((double)dis/m);
 
     int curb = b;		// current b: for the first mplus substrings it is b, for the rest it is (b-1)
 
