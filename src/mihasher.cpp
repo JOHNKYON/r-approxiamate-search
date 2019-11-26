@@ -24,7 +24,7 @@ void mihasher::batchquery(UINT32 *results, UINT32 *numres, qstat *stats, UINT8 *
     counter = new bitarray;
     counter->init(N);
 
-    UINT32 *res  = new UINT32[K*(distance+1)];
+    UINT32 *res  = new UINT32[K*(D*2+1)];
     UINT64 *chunks = new UINT64[m];
 
     UINT32 *presults = results;
@@ -112,11 +112,11 @@ void mihasher::query(UINT32 *results, UINT32* numres, qstat *stats, UINT8 *query
                             index = arr[c];
                             if (!counter->get(index)) { // if it is not a duplicate
                                 hammd = match(codes + (UINT64) index * (B_over_8), query, B_over_8);
-                                if (hammd > dis) {      // Only add when hamming distance is less than r.
-//                                    printf("The %dth query\n", idx);
-//                                    printf("dis is %d and hammd is %d\n", dis, hammd);
-                                    continue;
-                                }
+//                                if (hammd > dis) {      // Only add when hamming distance is less than r.
+////                                    printf("The %dth query\n", idx);
+////                                    printf("dis is %d and hammd is %d\n", dis, hammd);
+//                                    continue;
+//                                }
                                 counter->set(index);
                                 nc++;
                                 if (hammd <= dis && numres[hammd] < maxres) {
