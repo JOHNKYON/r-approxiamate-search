@@ -75,13 +75,13 @@ void mihasher::query(UINT32 *results, UINT32* numres, qstat *stats, UINT8 *query
 
     split(chunks, query, m, mplus, b);
     
-    int s;			// the search radius for each substring.
+    int s = ceil((double)dis/m);			// the search radius for each substring.
     int S = ceil((double)dis/m);
 
     int curb = b;		// current b: for the first mplus substrings it is b, for the rest it is (b-1)
 
 	printf("S is set to %d", S);
-    for (s = 0; s <= S && n < maxres; s++) {
+    while (n < maxres) {
         for (int k=0; k<m; k++) {
             if (k < mplus)
                 curb = b;
