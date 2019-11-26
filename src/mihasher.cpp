@@ -24,7 +24,7 @@ void mihasher::batchquery(UINT32 *results, UINT32 *numres, qstat *stats, UINT8 *
     counter = new bitarray;
     counter->init(N);
 
-    UINT32 *res  = new UINT32[K*(D+1)];
+    UINT32 *res  = new UINT32[K*(distance+1)];
     UINT64 *chunks = new UINT64[m];
 
     UINT32 *presults = results;
