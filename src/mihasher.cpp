@@ -80,7 +80,7 @@ void mihasher::query(UINT32 *results, UINT32* numres, qstat *stats, UINT8 *query
 
     int curb = b;		// current b: for the first mplus substrings it is b, for the rest it is (b-1)
 
-//	printf("s is set to %d", s);
+	printf("S is set to %d", S);
     for (s = 0; s <= S && n < maxres; s++) {
         for (int k=0; k<m; k++) {
             if (k < mplus)
@@ -113,7 +113,7 @@ void mihasher::query(UINT32 *results, UINT32* numres, qstat *stats, UINT8 *query
                             if (!counter->get(index)) { // if it is not a duplicate
                                 hammd = match(codes + (UINT64) index * (B_over_8), query, B_over_8);
                                 if (hammd > dis && !watched) {      // Only add when hamming distance is less than r.
-                                    printf("The %dth query", idx);
+                                    printf("The %dth query\n", idx);
                                     printf("dis is %d and hammd is %d\n", dis, hammd);
                                     watched = true;
                                     continue;
