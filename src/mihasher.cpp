@@ -111,6 +111,7 @@ void mihasher::query(UINT32 *results, UINT32* numres, qstat *stats, UINT8 *query
                             if (!counter->get(index)) { // if it is not a duplicate
                                 hammd = match(codes + (UINT64) index * (B_over_8), query, B_over_8);
                                 if (hammd > dis) {      // Only add when hamming distance is less than r.
+                                    printf("dis is %d and hammd is %d\n", dis, hammd);
                                     continue;
                                 }
                                 counter->set(index);
