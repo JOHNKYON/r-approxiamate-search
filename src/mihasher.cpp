@@ -119,7 +119,7 @@ void mihasher::query(UINT32 *results, UINT32* numres, qstat *stats, UINT8 *query
                                 }
                                 counter->set(index);
                                 nc++;
-                                if (hammd <= D && numres[hammd] < maxres) {
+                                if (hammd <= dis && numres[hammd] < maxres) {
                                     res[hammd * K + numres[hammd]] = index + 1;
                                 }
                                 numres[hammd]++;
