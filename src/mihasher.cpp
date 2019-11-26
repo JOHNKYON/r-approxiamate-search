@@ -81,7 +81,7 @@ void mihasher::query(UINT32 *results, UINT32* numres, qstat *stats, UINT8 *query
     int curb = b;		// current b: for the first mplus substrings it is b, for the rest it is (b-1)
 
 	printf("S is set to %d", S);
-    while (n < maxres) {
+//    while (n < maxres) {
         for (int k=0; k<m; k++) {
             if (k < mplus)
                 curb = b;
@@ -150,7 +150,7 @@ void mihasher::query(UINT32 *results, UINT32* numres, qstat *stats, UINT8 *query
 			if (n >= maxres)
 			break;
         }
-	}
+//	}
     end = clock();
 
     stats->ticks = end-start;
