@@ -33,7 +33,7 @@ void mihasher::batchquery(UINT32 *results, UINT32 *numres, qstat *stats, UINT8 *
     UINT8 *pq = queries;
 
     for (int i=0; i<numq; i++) {
-	query(presults, pnumres, pstats, pq, chunks, res, distance);
+	query(presults, pnumres, pstats, pq, chunks, res, distance, i);
 
 	presults += K;
 	pnumres += B+1;
@@ -51,7 +51,7 @@ void mihasher::batchquery(UINT32 *results, UINT32 *numres, qstat *stats, UINT8 *
 // Temp variables: chunks, res -- I did not want to malloc inside
 // query, so these arrays are passed from outside
 
-void mihasher::query(UINT32 *results, UINT32* numres, qstat *stats, UINT8 *query, UINT64 *chunks, UINT32 *res, UINT32 dis)
+void mihasher::query(UINT32 *results, UINT32* numres, qstat *stats, UINT8 *query, UINT64 *chunks, UINT32 *res, UINT32 dis, int idx)
 {
     UINT32 maxres = K ? K : N;			// if K == 0 that means we want everything to be processed.
 						// So maxres = N in that case. Otherwise K limits the results processed.
@@ -65,6 +65,8 @@ void mihasher::query(UINT32 *results, UINT32* numres, qstat *stats, UINT8 *query
     UINT32 index;
     int hammd;
     clock_t start, end;
+
+    bool watched = false;
 
     start = clock();
 
@@ -110,8 +112,10 @@ void mihasher::query(UINT32 *results, UINT32* numres, qstat *stats, UINT8 *query
                             index = arr[c];
                             if (!counter->get(index)) { // if it is not a duplicate
                                 hammd = match(codes + (UINT64) index * (B_over_8), query, B_over_8);
-                                if (hammd > dis) {      // Only add when hamming distance is less than r.
+                                if (hammd > dis && !watched) {      // Only add when hamming distance is less than r.
+                                    printf("The %dth query", idx);
                                     printf("dis is %d and hammd is %d\n", dis, hammd);
+                                    watched = true;
                                     continue;
                                 }
                                 counter->set(index);
