@@ -109,10 +109,13 @@ void mihasher::query(UINT32 *results, UINT32* numres, qstat *stats, UINT8 *query
                         for (int c = 0; c < size; c++) {
                             index = arr[c];
                             if (!counter->get(index)) { // if it is not a duplicate
-                                counter->set(index);
                                 hammd = match(codes + (UINT64) index * (B_over_8), query, B_over_8);
+                                if (hammd > dis) {      // Only add when hamming distance is less than r.
+                                    continue;
+                                }
+                                counter->set(index);
                                 nc++;
-                                if (hammd <= dis && numres[hammd] < maxres) {
+                                if (hammd <= D && numres[hammd] < maxres) {
                                     res[hammd * K + numres[hammd]] = index + 1;
                                 }
                                 numres[hammd]++;
@@ -139,8 +142,8 @@ void mihasher::query(UINT32 *results, UINT32* numres, qstat *stats, UINT8 *query
             // or more, and the remaining substrings have a distance
             // of s or more (total > s*m+k).
 
-//			if (n >= maxres)
-//			break;
+			if (n >= maxres)
+			break;
         }
 	}
     end = clock();
