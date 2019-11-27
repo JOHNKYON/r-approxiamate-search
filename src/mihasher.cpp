@@ -81,10 +81,10 @@ void mihasher::query(UINT32 *results, UINT32* numres, qstat *stats, UINT8 *query
 
     int curb = b;		// current b: for the first mplus substrings it is b, for the rest it is (b-1)
 
-	printf("S is set to %d\n", S);
+//	printf("S is set to %d\n", S);
     for (s = 0; s <= S; s++) {
         for (int k=0; k<m; k++) {
-            printf("s is %d and k is %d\n", s, k);
+//            printf("s is %d and k is %d\n", s, k);
             if (k < mplus)
                 curb = b;
             else
@@ -112,15 +112,15 @@ void mihasher::query(UINT32 *results, UINT32* numres, qstat *stats, UINT8 *query
                         nd += size;
                         for (int c = 0; c < size; c++) {
                             index = arr[c];
-                            printf("Index is %d\n", index);
+//                            printf("Index is %d\n", index);
                             if (!counter->get(index)) { // if it is not a duplicate
                                 hammd = match(codes + (UINT64) index * (B_over_8), query, B_over_8);
 //                                if (hammd > dis) {      // Only add when hamming distance is less than r.
-////                                    printf("The %dth query\n", idx);
-////                                    printf("dis is %d and hammd is %d\n", dis, hammd);
+//                                    printf("The %dth query\n", idx);
+//                                    printf("dis is %d and hammd is %d\n", dis, hammd);
 //                                    continue;
 //                                }
-                                printf("Hammd is %d\n", hammd);
+//                                printf("Hammd is %d\n", hammd);
                                 counter->set(index);
                                 nc++;
                                 if (hammd <= dis && numres[hammd] < maxres) {
@@ -166,6 +166,7 @@ void mihasher::query(UINT32 *results, UINT32* numres, qstat *stats, UINT8 *query
 	for (int c = 0; c < numres[s] && n < K; c++)
 	    results[n++] = res[s*K + c];
     }
+    results[n] = -1;
 
     UINT32 total = 0;
     stats->maxrho = -1;
