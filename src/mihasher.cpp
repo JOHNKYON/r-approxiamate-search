@@ -82,7 +82,7 @@ void mihasher::query(UINT32 *results, UINT32* numres, qstat *stats, UINT8 *query
     int curb = b;		// current b: for the first mplus substrings it is b, for the rest it is (b-1)
 
 	printf("S is set to %d\n", S);
-    for (s = 0; s <= S && n < maxres; s++) {
+    for (s = 0; s <= S; s++) {
         for (int k=0; k<m; k++) {
             printf("s is %d and k is %d\n", s, k);
             if (k < mplus)
