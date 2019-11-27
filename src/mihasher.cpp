@@ -166,7 +166,7 @@ void mihasher::query(UINT32 *results, UINT32* numres, qstat *stats, UINT8 *query
 	for (int c = 0; c < numres[s] && n < K; c++)
 	    results[n++] = res[s*K + c];
     }
-    results[n] = -1;
+    results[n] = 0;
 
     UINT32 total = 0;
     stats->maxrho = -1;
