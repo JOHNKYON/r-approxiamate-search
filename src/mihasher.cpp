@@ -33,7 +33,7 @@ void mihasher::batchquery(UINT32 *results, UINT32 *numres, qstat *stats, UINT8 *
     UINT8 *pq = queries;
 
     for (int i=0; i<numq; i++) {
-        printf("query %d\n", i);
+//        printf("query %d\n", i);
 	query(presults, pnumres, pstats, pq, chunks, res, distance, i);
 
 	presults += K;
