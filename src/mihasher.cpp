@@ -81,7 +81,7 @@ void mihasher::query(UINT32 *results, UINT32* numres, qstat *stats, UINT8 *query
 
     int curb = b;		// current b: for the first mplus substrings it is b, for the rest it is (b-1)
 
-	printf("S is set to %d", S);
+	printf("S is set to %d\n", S);
     for (s = 0; s <= S && n < maxres; s++) {
         for (int k=0; k<m; k++) {
             printf("s is %d and k is %d\n", s, k);
@@ -150,8 +150,8 @@ void mihasher::query(UINT32 *results, UINT32* numres, qstat *stats, UINT8 *query
             // or more, and the remaining substrings have a distance
             // of s or more (total > s*m+k).
 
-			if (n >= maxres)
-			break;
+//			if (n >= maxres)
+//			break;
         }
 	}
     end = clock();
