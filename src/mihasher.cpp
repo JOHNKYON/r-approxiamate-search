@@ -161,7 +161,7 @@ void mihasher::query(UINT32 *results, UINT32* numres, qstat *stats, UINT8 *query
     stats->numlookups = nl;
 
     n = 0;
-    for (s = 0; s <= S && n < K; s++ ) {
+    for (s = 0; s <= dis && n < K; s++ ) {
 	for (int c = 0; c < numres[s] && n < K; c++)
 	    results[n++] = res[s*K + c];
     }
