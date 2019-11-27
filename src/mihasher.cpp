@@ -33,7 +33,7 @@ void mihasher::batchquery(UINT32 *results, UINT32 *numres, qstat *stats, UINT8 *
     UINT8 *pq = queries;
 
     for (int i=0; i<numq; i++) {
-//        printf("query %d\n", i);
+        printf("query %d\n", i);
 	query(presults, pnumres, pstats, pq, chunks, res, distance, i);
 
 	presults += K;
@@ -81,10 +81,10 @@ void mihasher::query(UINT32 *results, UINT32* numres, qstat *stats, UINT8 *query
 
     int curb = b;		// current b: for the first mplus substrings it is b, for the rest it is (b-1)
 
-//	printf("S is set to %d\n", S);
+	printf("S is set to %d\n", S);
     for (s = 0; s <= S && s <= b; s++) {
         for (int k=0; k<m; k++) {
-//            printf("s is %d and k is %d\n", s, k);
+            printf("s is %d and k is %d\n", s, k);
             if (k < mplus)
                 curb = b;
             else
@@ -112,7 +112,7 @@ void mihasher::query(UINT32 *results, UINT32* numres, qstat *stats, UINT8 *query
                         nd += size;
                         for (int c = 0; c < size; c++) {
                             index = arr[c];
-//                            printf("Index is %d\n", index);
+                            printf("Index is %d\n", index);
                             if (!counter->get(index)) { // if it is not a duplicate
                                 hammd = match(codes + (UINT64) index * (B_over_8), query, B_over_8);
 //                                if (hammd > dis) {      // Only add when hamming distance is less than r.
@@ -120,7 +120,7 @@ void mihasher::query(UINT32 *results, UINT32* numres, qstat *stats, UINT8 *query
 //                                    printf("dis is %d and hammd is %d\n", dis, hammd);
 //                                    continue;
 //                                }
-//                                printf("Hammd is %d\n", hammd);
+                                printf("Hammd is %d\n", hammd);
                                 counter->set(index);
                                 nc++;
                                 if (hammd <= dis && numres[hammd] < maxres) {
