@@ -98,10 +98,10 @@ int main (int argc, char**argv) {
     	R = N;
     }
 
-    if (K < 1 || K > N) {
-	printf("A valid K is not provided.\n");
-	return EXIT_FAILURE;
-    }
+//    if (K < 1 || K > N) {
+//	printf("A valid K is not provided.\n");
+//	return EXIT_FAILURE;
+//    }
 
     int B_over_8 = B/8;
     /* Done with initialization and sanity checks */
